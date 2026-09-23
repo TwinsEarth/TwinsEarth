@@ -103,13 +103,19 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android
-      - uses: android-actions/setup-android@v3
+      - name: 安装 Android NDK
+        run: |
+          sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;26.1.10909125" "platforms;android-34" "build-tools;34.0.0"
+          echo "y" | sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
       - name: 前端
         working-directory: agent-universe/client
         run: |
           npm install
           npm run build
-      - name: Tauri Android 构建
+      - name: Tauri Android init
+        working-directory: agent-universe/client
+        run: npx tauri android init
+      - name: 构建 APK
         working-directory: agent-universe/client
         run: npx tauri android build
       - name: 上传产物
@@ -119,7 +125,7 @@ jobs:
           path: agent-universe/client/src-tauri/gen/android/app/build/outputs/apk/
 
   build-ios:
-    name: 🍏 iOS
+    name: 🍏 iOS (配置验证)
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -134,11 +140,11 @@ jobs:
         run: |
           npm install
           npm run build
-      - name: Tauri iOS 构建
+      - name: Tauri iOS init（验证配置）
         working-directory: agent-universe/client
-        run: npx tauri ios build
-      - name: 上传产物
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-ipa
-          path: agent-universe/client/src-tauri/gen/apple/build/
+        run: npx tauri ios init
+      - name: 说明
+        run: |
+          echo "iOS .ipa 需要 Apple Developer 证书签名。"
+          echo "请在本地 macOS + Xcode 环境执行: npx tauri ios build"
+          echo "配置已通过 tauri ios init 验证。"
