@@ -67,6 +67,8 @@
 TwinsEarth/
 ├── README.md                     # 本文件（统一入口）
 ├── LICENSES-README.md            # 许可证说明（多许可证）
+├── CONTRIBUTING.md               # 贡献指南
+├── SECURITY.md                   # 安全策略
 ├── docs/
 │   ├── ARCHITECTURE.md           # 孪生地球整体系统架构
 │   ├── INTEGRATION.md            # 三项目协同与集成逻辑
@@ -75,18 +77,23 @@ TwinsEarth/
 ├── udos-reasoning-engine/        # 🧠 灵魂：认知架构内核（Python, Apache-2.0）
 ├── PixelToCivilization/          # 🌍 躯体：数字空间生成引擎（C#, MIT）
 └── agent-universe/               # 🕸️ 网络：去中心化智能体网络（Rust, MIT）
+    ├── gsn-core/                 # Rust 核心库 + gsn-daemon
+    ├── js/                       # JS SDK（零依赖，GitHub Packages）
+    ├── aip-sdk-py/               # Python AIP SDK
+    ├── contracts/                # Solidity 合约
+    └── desktop/                  # Tauri 2 桌面客户端（v2.3.4）
 ```
 
+---
 
-
->
+## 五、快速开始
 
 ### 🧠 UDOS 推演引擎（纯 CPU 可跑）
 
 ```bash
 cd udos-reasoning-engine
 pip install -r requirements.txt
-python -m pytest -q -p no:warnings          # 1500+ 测试
+python -m pytest -q -p no:warnings          # 1892+ 测试
 UDOS_AUTH=off python -m udos.server --port 8000 --preset small
 ```
 
@@ -98,8 +105,20 @@ cd agent-universe/gsn-core
 cargo build && cargo test                    # Rust 测试
 cargo run --bin gsn-daemon -- --p2p-port 4001 --api-port 4002
 
-# JS SDK（零依赖，npm v12 友好）
-node ../../js/test/test.js
+# JS SDK（零依赖，走 GitHub Packages）
+cd ../js && npm install && npm test          # 8 测试
+
+# Python AIP SDK
+cd ../aip-sdk-py && pip install pytest pytest-asyncio && pytest -q
+```
+
+### 🖥️ 桌面客户端（Tauri 2）
+
+```bash
+cd agent-universe/desktop
+npm install
+npm run tauri dev                           # 开发模式
+npm run tauri build                         # 打包（需 macOS）
 ```
 
 ### 🌍 从像素到文明
