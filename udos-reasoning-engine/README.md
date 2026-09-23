@@ -1,6 +1,6 @@
 # UDOS Reasoning Engine · UDOS 推演引擎
 
-**当前版本：v5.4.4** ｜ 双引擎（CTM 连续思维机 + GPM 场景内化）｜ 纯 CPU 可跑 ｜ 1572 个测试全绿 ｜ License: Apache-2.0
+**当前版本：v7.5.0** ｜ 双引擎（CTM 连续思维机 + GPM 场景内化）｜ 纯 CPU 可跑 ｜ 1892 个测试全绿 ｜ License: Apache-2.0
 
 UDOS 推演引擎是 UDOS 物理世界数字化基础设施的**认知架构内核**：以 PCE-Format 物理 Token 为数据层，融合 Sakana AI 连续思维机（CTM）的时序同步推理与 Doc-to-LoRA（GPM）的场景内化；并在其上以“外挂、零梯度、opt-in、可证伪”的方式，叠加可信推演、因果决策、具身闭环、空间/世界模型、多智能体协作、自进化，以及 v5.x 的安全治理、AGI/ASI 情报、KV Cache 分层、类脑树突与精细生物物理数值核。
 
