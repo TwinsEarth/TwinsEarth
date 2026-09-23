@@ -54,6 +54,31 @@ jobs:
       - name: Test
         run: python -m pytest -q
 
+  frontend-clients:
+    name: 🖥️ Frontend Clients (desktop/client)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Check desktop frontend syntax
+        working-directory: agent-universe/desktop
+        run: |
+          node --check src/main.js
+          echo "desktop main.js syntax OK"
+      - name: Check client frontend syntax
+        working-directory: agent-universe/client
+        run: |
+          node --check src/main.js
+          echo "client main.js syntax OK"
+      - name: Validate Tauri config (desktop)
+        working-directory: agent-universe/desktop/src-tauri
+        run: node -e "JSON.parse(require('fs').readFileSync('tauri.conf.json','utf8'));console.log('desktop tauri.conf.json valid')"
+      - name: Validate Tauri config (client)
+        working-directory: agent-universe/client/src-tauri
+        run: node -e "JSON.parse(require('fs').readFileSync('tauri.conf.json','utf8'));console.log('client tauri.conf.json valid')"
+
   python-udos:
     name: 🧠 UDOS Engine
     runs-on: ubuntu-latest
