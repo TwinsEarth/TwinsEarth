@@ -4,6 +4,10 @@ version = "2.3.5"
 description = "Agent Universe v2.3.5 跨平台客户端"
 edition = "2021"
 
+[lib]
+name = "au_client_universal"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
