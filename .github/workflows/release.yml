@@ -5,19 +5,13 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
-    inputs:
-      tag:
-        description: "发布标签（如 v2.3.5）"
-        required: true
 
 env:
-  CARGO_TERM_COLOR: always
   NODE_VERSION: "20"
 
 jobs:
-  # ─── Linux ───
   build-linux:
-    name: 🐧 Linux (.deb / .AppImage)
+    name: 🐧 Linux
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -28,33 +22,26 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: agent-universe/client/src-tauri
-
-      - name: 安装 Linux 依赖
+      - name: 系统依赖
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
-
-      - name: 前端依赖
+      - name: 前端
         working-directory: agent-universe/client
-        run: npm install
-
+        run: |
+          npm install
+          npm run build
       - name: Tauri 构建
         working-directory: agent-universe/client
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx tauri build
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
         with:
-          projectPath: .
-          tagName: ${{ github.ref_name }}
-          releaseName: "Agent Universe ${{ github.ref_name }}"
-          releaseBody: "自动构建的五平台安装包"
-          releaseDraft: true
-          prerelease: false
-          args: --target x86_64-unknown-linux-gnu
+          name: linux-packages
+          path: agent-universe/client/src-tauri/target/release/bundle/
 
-  # ─── macOS ───
   build-macos:
-    name: 🍎 macOS (.app / .dmg)
+    name: 🍎 macOS
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -65,42 +52,22 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: agent-universe/client/src-tauri
-
-      - name: 前端依赖
+      - name: 前端
         working-directory: agent-universe/client
-        run: npm install
-
-      - name: Tauri 构建 (Apple Silicon)
+        run: |
+          npm install
+          npm run build
+      - name: Tauri 构建
         working-directory: agent-universe/client
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx tauri build
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
         with:
-          projectPath: .
-          tagName: ${{ github.ref_name }}
-          releaseName: "Agent Universe ${{ github.ref_name }}"
-          releaseBody: "自动构建的五平台安装包"
-          releaseDraft: true
-          prerelease: false
-          args: --target aarch64-apple-darwin
+          name: macos-packages
+          path: agent-universe/client/src-tauri/target/release/bundle/
 
-      - name: Tauri 构建 (Intel)
-        working-directory: agent-universe/client
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          projectPath: .
-          tagName: ${{ github.ref_name }}
-          releaseName: "Agent Universe ${{ github.ref_name }}"
-          releaseBody: "自动构建的五平台安装包"
-          releaseDraft: true
-          prerelease: false
-          args: --target x86_64-apple-darwin
-
-  # ─── Windows ───
   build-windows:
-    name: 🪟 Windows (.exe / .msi)
+    name: 🪟 Windows
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -111,28 +78,22 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: agent-universe/client/src-tauri
-
-      - name: 前端依赖
+      - name: 前端
         working-directory: agent-universe/client
-        run: npm install
-
+        run: |
+          npm install
+          npm run build
       - name: Tauri 构建
         working-directory: agent-universe/client
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx tauri build
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
         with:
-          projectPath: .
-          tagName: ${{ github.ref_name }}
-          releaseName: "Agent Universe ${{ github.ref_name }}"
-          releaseBody: "自动构建的五平台安装包"
-          releaseDraft: true
-          prerelease: false
-          args: --target x86_64-pc-windows-msvc
+          name: windows-packages
+          path: agent-universe/client/src-tauri/target/release/bundle/
 
-  # ─── Android ───
   build-android:
-    name: 🤖 Android (.apk)
+    name: 🤖 Android
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -141,36 +102,24 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
-
-      - name: 安装 Android SDK / NDK
-        uses: android-actions/setup-android@v3
-
-      - name: 前端依赖
+          targets: aarch64-linux-android
+      - uses: android-actions/setup-android@v3
+      - name: 前端
         working-directory: agent-universe/client
-        run: npm install
-
-      - name: 初始化 Tauri Android
+        run: |
+          npm install
+          npm run build
+      - name: Tauri Android 构建
         working-directory: agent-universe/client
-        run: npx tauri android init
-
-      - name: 构建 APK
-        working-directory: agent-universe/client
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx tauri android build
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
         with:
-          projectPath: .
-          tagName: ${{ github.ref_name }}
-          releaseName: "Agent Universe ${{ github.ref_name }}"
-          releaseBody: "自动构建的五平台安装包"
-          releaseDraft: true
-          prerelease: false
-          args: --target aarch64-linux-android
+          name: android-apk
+          path: agent-universe/client/src-tauri/gen/android/app/build/outputs/apk/
 
-  # ─── iOS ───
   build-ios:
-    name: 🍏 iOS (.ipa)
+    name: 🍏 iOS
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -179,26 +128,17 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-ios,x86_64-apple-ios
-
-      - name: 前端依赖
+          targets: aarch64-apple-ios
+      - name: 前端
         working-directory: agent-universe/client
-        run: npm install
-
-      - name: 初始化 Tauri iOS
+        run: |
+          npm install
+          npm run build
+      - name: Tauri iOS 构建
         working-directory: agent-universe/client
-        run: npx tauri ios init
-
-      - name: 构建 IPA
-        working-directory: agent-universe/client
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx tauri ios build
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
         with:
-          projectPath: .
-          tagName: ${{ github.ref_name }}
-          releaseName: "Agent Universe ${{ github.ref_name }}"
-          releaseBody: "自动构建的五平台安装包"
-          releaseDraft: true
-          prerelease: false
-          args: --target aarch64-apple-ios
+          name: ios-ipa
+          path: agent-universe/client/src-tauri/gen/apple/build/
