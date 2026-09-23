@@ -115,7 +115,7 @@ def test_scene_conditioning_ablation_gain():
                     nlm_hidden=16, out_dims=32, certainty_threshold=0.0)
     m = PhysicsPredictor(cfg, scene_param_dim=4)
     assert float(m.ctm.scene_gate.detach()) == 0.0   # 零门控初始等价无条件
-    CTMTrainer(m, TrainConfig(epochs=30, lr=3e-3)).train(tr)
+    CTMTrainer(m, TrainConfig(epochs=50, lr=3e-3)).train(tr)
     rep = evaluate_predictor(m, te)
     gain = rep["ablation"]["condition_gain_x"]
     assert rep["ablation"]["conditioned_mse"] < rep["ablation"]["unconditioned_mse"]
