@@ -30,7 +30,7 @@
     "url": "https://github.com/TwinsEarth/agent-universe/issues"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org/"
   },
   "engines": {
     "node": ">=18"
