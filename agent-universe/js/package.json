@@ -1,0 +1,43 @@
+{
+  "name": "@twinsearth/agent-universe",
+  "version": "2.3.4",
+  "description": "Agent Universe - 群众化的 AGI 路线，去中心化的智能体共享 & 开源网络。使命：让科技造福全人类！",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "keywords": [
+    "agi",
+    "agent",
+    "p2p",
+    "decentralized",
+    "swarm",
+    "dht",
+    "mcp",
+    "a2a",
+    "agent-market"
+  ],
+  "author": "TwinsEarth",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TwinsEarth/agent-universe.git",
+    "directory": "js"
+  },
+  "homepage": "https://github.com/TwinsEarth/agent-universe#readme",
+  "bugs": {
+    "url": "https://github.com/TwinsEarth/agent-universe/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "lib"
+  ]
+}

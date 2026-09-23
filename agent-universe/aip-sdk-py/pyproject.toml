@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aip-sdk"
+version = "2.3.4"
+authors = [{name = "Agent Universe", email = "twins-earth@users.noreply.github.com"}]
+description = "Agent Interop Protocol SDK"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

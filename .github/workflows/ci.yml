@@ -1,0 +1,74 @@
+name: TwinsEarth CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  rust-core:
+    name: 🕸️ Rust Core (gsn-core)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agent-universe/gsn-core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: agent-universe/gsn-core
+      - name: Build
+        run: cargo build --verbose
+      - name: Test
+        run: cargo test --verbose
+
+  js-sdk:
+    name: 🕸️ JS SDK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agent-universe/js
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Test
+        run: node test/test.js
+
+  python-aip:
+    name: 🕸️ Python AIP SDK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agent-universe/aip-sdk-py
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install
+        run: pip install pytest pytest-asyncio
+      - name: Test
+        run: python -m pytest -q
+
+  python-udos:
+    name: 🧠 UDOS Engine
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: udos-reasoning-engine
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install CPU PyTorch
+        run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Test
+        run: python -m pytest -q -p no:warnings
